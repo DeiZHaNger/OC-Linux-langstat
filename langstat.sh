@@ -1,9 +1,11 @@
 #!/bin/bash
 
-alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+uppercase='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+lowercase='abcdefghijklmnopqrstuvwxyz'
 tmp='.dzlgsttmp'
 
 oflag=''
+lflag=''
 
 # Fonction affichage de l'aide rapide
 function quickhelp {
@@ -38,6 +40,9 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 
 	for option in `echo "$1" | cut -c 2- | sed 's/\(.\)/\1\n/g'`; do
 		case $option in
+			l)
+				lflag='true'
+				;;
 			o)
 				oflag='true'
 				;;
@@ -67,6 +72,13 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 	done
 	shift
 done
+
+#Préparation de la liste de caractères à analyser
+alphabet=$uppercase
+
+if [ -n $lflag ]; then
+	alphabet=$alphabet$lowercase
+fi
 
 # Traitement du fichier passé en argument
 if [ ! -e "$1" ] || [ ! -f "$1" ]; then
