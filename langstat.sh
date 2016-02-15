@@ -33,6 +33,9 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 
 	for option in `echo "$1" | cut -c 2- | sed 's/\(.\)/\1\n/g'`; do
 		case $option in
+			t)
+				tflag='true'
+				;;
 			i)
 				iflag='-i'
 				;;
@@ -112,9 +115,13 @@ if [ -e $intmp ]; then
 fi
 
 if [ -z $oflag ]; then
-	grep . "$1" >> $intmp
+	if [ -z $tflag ]; then
+		grep . "$1" > $intmp
+	else
+		sed 's/ /\n/g' "$1" > $intmp
+	fi
 else
-	sed 's/\(.\)/\1\n/g' "$1" >> $intmp
+	sed 's/\(.\)/\1\n/g' "$1" > $intmp
 fi
 
 for char in `echo "$alphabet" | sed 's/\(.\)/\1\n/g'`; do
