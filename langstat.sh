@@ -11,22 +11,29 @@ function quickhelp {
 	echo "syntaxe -> ./langstat.sh [option]... nomdufichier (avec extension le cas échéant)"
 	echo "Exemples: "
 	echo "sans option -> ./langstat.sh dico.txt"
-	echo "avec option(s) -> ./langstat.sh -v -p dico.txt"
-       	echo -e "\t\tou ./langstat.sh -pvy dico.txt"
+	echo "avec option(s) -> ./langstat.sh -v -o dico.txt"
+       	echo -e "\t\tou ./langstat.sh -ovy dico.txt"
+	echo "Options valides: -o | -v | -y"
 	echo "Pour plus d'informations veuillez consulter la documentation complète"
 	exit 0
+}
+
+# Fonction affichage et sortie en cas d'erreur
+function errorcase {
+	echo "Utilisez l'option -h ou --help pour vérifier la syntaxe"
+	exit 1
 }
 
 # Récupération des options et gestion des erreurs de saisie
 if [ $# -lt 1 ]; then
 	echo "$0 : argument(s) manquant(s)"
-	exit 1
+	errorcase
 fi
 
 while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 	if [ -z `echo "$1" | cut -c 2` ]; then
 		echo "erreur de syntaxe : '-' option(s) non spécifiée(s)"
-		exit 1
+		errorcase
 	fi
 
 	for option in `echo "$1" | cut -c 2- | sed 's/\(.\)/\1\n/g'`; do
@@ -48,13 +55,13 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 						;;
 					*)
 						echo "--$longoption : option longue invalide ou non spécifiée"
-						exit 1
+						errorcase
 						;;
 				esac
 				;;
 			*)
 				echo "-$option : option invalide"
-				exit 1
+				errorcase
 				;;
 		esac
 	done
@@ -64,7 +71,7 @@ done
 # Traitement du fichier passé en argument
 if [ ! -e "$1" ] || [ ! -f "$1" ]; then
 	echo "nom de fichier invalide ou non spécifiée"
-	exit 1
+	errorcase
 fi
 
 if [ $# -gt 1 ]; then
