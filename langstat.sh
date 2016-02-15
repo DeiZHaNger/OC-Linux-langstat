@@ -43,6 +43,9 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 			l)
 				lflag='true'
 				;;
+			L)
+				Lflag='true'
+				;;
 			o)
 				oflag='true'
 				;;
@@ -52,11 +55,12 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 			-)
 				longoption=`echo "$1" | cut -c 3-`
 				case $longoption in
+					lower-only)
+						Lflag='true'
+						break
+						;;
 					help)
 						quickhelp
-						;;
-					longoptionname)
-						break	
 						;;
 					*)
 						echo "--$longoption : option longue invalide ou non spécifiée"
@@ -76,8 +80,12 @@ done
 #Préparation de la liste de caractères à analyser
 alphabet=$uppercase
 
-if [ -n $lflag ]; then
+if [ ! -z $lflag ]; then
 	alphabet=$alphabet$lowercase
+fi
+
+if [ ! -z $Lflag ]; then
+	alphabet=$lowercase
 fi
 
 # Traitement du fichier passé en argument
