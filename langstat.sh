@@ -4,9 +4,6 @@ uppercase='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 lowercase='abcdefghijklmnopqrstuvwxyz'
 tmp='.dzlgsttmp'
 
-oflag=''
-lflag=''
-
 # Fonction affichage de l'aide rapide
 function quickhelp {
 	echo "Aide rapide -"
@@ -40,6 +37,9 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 
 	for option in `echo "$1" | cut -c 2- | sed 's/\(.\)/\1\n/g'`; do
 		case $option in
+			i)
+				iflag='-i'
+				;;
 			l)
 				lflag='true'
 				;;
@@ -80,6 +80,11 @@ done
 #Préparation de la liste de caractères à analyser
 alphabet=$uppercase
 
+if [ ! -z $iflag ]; then
+	lflag=''
+	Lflag=''
+fi
+
 if [ ! -z $lflag ]; then
 	alphabet=$alphabet$lowercase
 fi
@@ -104,10 +109,10 @@ fi
 
 if [ -z $oflag ]; then
 	for char in `echo "$alphabet" | sed 's/\(.\)/\1\n/g'`; do
-		echo -e "$(grep $char "$1" | wc -l)\t- $char" >> $tmp
+		echo -e "$(grep $iflag $char "$1" | wc -l)\t- $char" >> $tmp
 	done
 else
-	sed 's/\(.\)/\1\n/g' "$1" | grep [$alphabet] | sort | uniq -c >> $tmp
+	sed 's/\(.\)/\1\n/g' "$1" | grep $iflag [$alphabet] | sort | uniq -c >> $tmp
 fi
 
 sort -rn $tmp

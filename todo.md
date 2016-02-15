@@ -1,9 +1,9 @@
 # Options à ajouter :
 - [ ] -v ajout d'un titre de présentation et autres
 - [ ] -y pour compter les traits d'union
-- [ ] -i pour unir minuscules et majuscules
+- [x] -i pour unir minuscules et majuscules
 - [x] -l pour les minuscules
-- [ ] -L seulement les minuscules
+- [x] -L seulement les minuscules
 
 ## éventuellement :
 - [ ] --push [] ajouter des caractères à rechercher
