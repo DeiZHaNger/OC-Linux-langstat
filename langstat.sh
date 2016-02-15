@@ -3,6 +3,8 @@
 alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 tmp='.dzlgsttmp'
 
+oflag=''
+
 # Fonction affichage de l'aide rapide
 function quickhelp {
 	echo "Aide rapide -"
@@ -27,8 +29,11 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 		exit 1
 	fi
 
-	for option in `echo "$1" | cut -c 2- | sed -E s'/(.)/\1\n/g'`; do
+	for option in `echo "$1" | cut -c 2- | sed 's/\(.\)/\1\n/g'`; do
 		case $option in
+			o)
+				oflag='true'
+				;;
 			h)
 				quickhelp
 				;;
@@ -42,7 +47,7 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 						break	
 						;;
 					*)
-						echo "--$longoption : option longue invalide ou manquante"
+						echo "--$longoption : option longue invalide ou non spécifiée"
 						exit 1
 						;;
 				esac
@@ -57,20 +62,26 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 done
 
 # Traitement du fichier passé en argument
-if [ -e "$1" ]; then
-	
-	if [ $# -gt 1 ]; then
-		echo "Les arguments placés après '$1' ont été ignorés"
-	fi
+if [ ! -e "$1" ] || [ ! -f "$1" ]; then
+	echo "nom de fichier invalide ou non spécifiée"
+	exit 1
+fi
 
-	if [ -e $tmp ]; then
-		rm $tmp
-	fi
-	for char in `echo "$alphabet" | sed -E s'/(.)/\1\n/g'`; do
+if [ $# -gt 1 ]; then
+	echo "Les arguments placés après '$1' ont été ignorés"
+fi
+
+if [ -e $tmp ]; then
+	rm $tmp
+fi
+
+if [ -z $oflag ]; then
+	for char in `echo "$alphabet" | sed 's/\(.\)/\1\n/g'`; do
 		echo -e "$(grep $char "$1" | wc -l)\t- $char" >> $tmp
 	done
-	sort -rn $tmp
-	rm $tmp
 else
-	echo "nom de fichier invalide ou manquant"
+	sed 's/\(.\)/\1\n/g' "$1" | grep [$alphabet] | sort | uniq -c >> $tmp
 fi
+
+sort -rn $tmp
+rm $tmp

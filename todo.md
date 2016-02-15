@@ -1,8 +1,8 @@
 # Options à ajouter :
-- [ ] -h pour afficher l'aide
+- [X] -h pour afficher l'aide
 - [ ] -v ajout d'un titre de présentation et autres
 - [ ] -y pour compter les traits d'union
-- [ ] -o pour compter toutes les occurrences
+- [X] -o pour compter toutes les occurrences
 - [ ] -p afficher sous forme de pourcentage
 
 ## éventuellement :
