@@ -1,9 +1,5 @@
 #!/bin/bash
 
-uppercase='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-lowercase='abcdefghijklmnopqrstuvwxyz'
-tmp='.dzlgsttmp'
-
 # Fonction affichage de l'aide rapide
 function quickhelp {
 	echo "Aide rapide -"
@@ -78,6 +74,8 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 done
 
 #Préparation de la liste de caractères à analyser
+uppercase='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+lowercase='abcdefghijklmnopqrstuvwxyz'
 alphabet=$uppercase
 
 if [ ! -z $iflag ]; then
@@ -103,17 +101,26 @@ if [ $# -gt 1 ]; then
 	echo "Les arguments placés après '$1' ont été ignorés"
 fi
 
-if [ -e $tmp ]; then
-	rm $tmp
+outtmp='.dzlgstouttmp'
+if [ -e $outtmp ]; then
+	rm $outtmp
+fi
+
+intmp='.dzlgstintmp'
+if [ -e $intmp ]; then
+	rm $intmp
 fi
 
 if [ -z $oflag ]; then
-	for char in `echo "$alphabet" | sed 's/\(.\)/\1\n/g'`; do
-		echo -e "$(grep $iflag $char "$1" | wc -l)\t- $char" >> $tmp
-	done
+	grep . "$1" >> $intmp
 else
-	sed 's/\(.\)/\1\n/g' "$1" | grep $iflag [$alphabet] | sort | uniq -c >> $tmp
+	sed 's/\(.\)/\1\n/g' "$1" >> $intmp
 fi
 
-sort -rn $tmp
-rm $tmp
+for char in `echo "$alphabet" | sed 's/\(.\)/\1\n/g'`; do
+	echo "$(grep $iflag $char $intmp | wc -l)-$char" >> $outtmp
+done
+
+sort -rn $outtmp | sed 's/\([0-9]*\)-\(.\)/\2 - \1/g'
+rm $outtmp
+rm $intmp
