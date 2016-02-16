@@ -33,8 +33,8 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 
 	for option in `echo "$1" | cut -c 2- | sed 's/\(.\)/\1\n/g'`; do
 		case $option in
-			t)
-				tflag='true'
+			h)
+				quickhelp
 				;;
 			i)
 				igrep='-i'
@@ -48,12 +48,22 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 			o)
 				oflag='true'
 				;;
-			h)
-				quickhelp
+			t)
+				tflag='true'
+				;;
+			y)
+				hyphen='-'
 				;;
 			-)
 				longoption=`echo "$1" | cut -c 3-`
 				case $longoption in
+					help)
+						quickhelp
+						;;
+					lower-only)
+						Lflag='true'
+						break
+						;;
 					plus-lower)
 						pluslower='àâäçèéêëîïôöùûüæœ'
 						break
@@ -62,12 +72,9 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 						plusupper='ÀÂÄÇÈÉÊËÎÏÔÖÙÛÜÆŒ'
 						break
 						;;
-					lower-only)
-						Lflag='true'
+					plus-spec)
+						plusspec="?!',;:"
 						break
-						;;
-					help)
-						quickhelp
 						;;
 					*)
 						echo "--$longoption : option longue invalide ou non spécifiée"
@@ -102,7 +109,7 @@ if [ ! -z $Lflag ]; then
 	alphabet=$lowercase
 fi
 
-alphabet=$alphabet$pluslower$plusupper
+alphabet=$alphabet$hyphen$pluslower$plusupper$plusspec
 
 # Traitement du fichier passé en argument
 if [ ! -e "$1" ] || [ ! -f "$1" ]; then
@@ -126,7 +133,7 @@ fi
 
 if [ -z $oflag ]; then
 	if [ -z $tflag ]; then
-		grep . "$1" > $intmp
+		cp "$1" $intmp
 	else
 		sed 's/ /\n/g' "$1" > $intmp
 	fi
@@ -138,6 +145,6 @@ for char in `echo "$alphabet" | sed 's/\(.\)/\1\n/g'`; do
 	echo "$(grep $igrep $char $intmp | wc -l)-$char" >> $outtmp
 done
 
-sort -rn $outtmp | sed 's/\([0-9]*\)-\(.\)/\2 - \1/g'
+sort -rn $outtmp | sed 's/\([0-9]*\)-\(.\)/\2 = \1/g'
 rm $outtmp
 rm $intmp
