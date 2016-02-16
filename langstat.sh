@@ -21,7 +21,7 @@ function errorcase {
 
 # Récupération des options et gestion des erreurs de saisie
 if [ $# -lt 1 ]; then
-	echo "$0 : argument(s) manquant(s)"
+	echo "'$0' : argument(s) manquant(s)"
 	errorcase
 fi
 
@@ -37,7 +37,7 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 				quickhelp
 				;;
 			i)
-				igrep='-i'
+				iflag='-i'
 				;;
 			l)
 				lflag='true'
@@ -56,6 +56,11 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 				;;
 			-)
 				longoption=`echo "$1" | cut -c 3-`
+				if [ -z $longoption ]; then
+					echo "erreur de syntaxe: '--' option longue non spécifiée"
+					errorcase
+				fi
+
 				case $longoption in
 					help)
 						quickhelp
@@ -77,7 +82,7 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 						break
 						;;
 					*)
-						echo "--$longoption : option longue invalide ou non spécifiée"
+						echo "--$longoption : option longue invalide"
 						errorcase
 						;;
 				esac
@@ -98,7 +103,6 @@ alphabet=$uppercase
 
 if [ ! -z $iflag ]; then
 	lflag=''
-	Lflag=''
 fi
 
 if [ ! -z $lflag ]; then
@@ -112,8 +116,18 @@ fi
 alphabet=$alphabet$hyphen$pluslower$plusupper$plusspec
 
 # Traitement du fichier passé en argument
-if [ ! -e "$1" ] || [ ! -f "$1" ]; then
-	echo "nom de fichier invalide ou non spécifiée"
+if [ -z "$1" ]; then
+	echo "nom de fichier non spécifiée"
+	errorcase
+fi
+
+if [ ! -e "$1" ] || [ ! -f "$1" ] || [ -L "$1" ]; then
+	echo "'$1' ne correspond pas à un fichier valide"
+	errorcase
+fi
+
+if [ ! -r "$1" ]; then
+	echo "Les droits d'accès au fichier '$1' sont limités"
 	errorcase
 fi
 
@@ -142,7 +156,7 @@ else
 fi
 
 for char in `echo "$alphabet" | sed 's/\(.\)/\1\n/g'`; do
-	echo "$(grep $igrep $char $intmp | wc -l)-$char" >> $outtmp
+	echo "$(grep $iflag $char $intmp | wc -l)-$char" >> $outtmp
 done
 
 sort -rn $outtmp | sed 's/\([0-9]*\)-\(.\)/\2 = \1/g'
