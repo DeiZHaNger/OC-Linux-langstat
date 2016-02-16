@@ -6,9 +6,9 @@ function quickhelp {
 	echo "syntaxe -> ./langstat.sh [option]... nomdufichier (avec extension le cas échéant)"
 	echo "Exemples: "
 	echo "sans option -> ./langstat.sh dico.txt"
-	echo "avec option(s) -> ./langstat.sh -v -o dico.txt"
-       	echo -e "\t\tou ./langstat.sh -ovy dico.txt"
-	echo "Options valides: -o | -v | -y"
+	echo "avec option(s) -> ./langstat.sh -i -o dico.txt"
+       	echo -e "\t\tou ./langstat.sh -ioy dico.txt"
+	echo "Quelques options valides: -i | -l | -o | -t | -y"
 	echo "Pour plus d'informations veuillez consulter la documentation complète"
 	exit
 }
@@ -135,7 +135,7 @@ if [ -z $oflag ]; then
 	if [ -z $tflag ]; then
 		cp "$1" $intmp
 	else
-		sed 's/ /\n/g' "$1" > $intmp
+		sed "s/'/' /g" "$1" | sed 's/-/- /g' | sed 's/ /\n/g' > $intmp
 	fi
 else
 	sed 's/\(.\)/\1\n/g' "$1" > $intmp
