@@ -1,15 +1,7 @@
 # Options à ajouter :
 - [ ] -v ajout d'un titre de présentation et autres
-- [ ] -y pour compter les traits d'union
-- [x] -i pour unir minuscules et majuscules
-- [x] -l pour les minuscules
-- [x] -L seulement les minuscules
-
-## éventuellement :
-- [ ] --push [] ajouter des caractères à rechercher
+- [ ] --plus-spec pour compter les traits d'union et autres spéciaux
 - [ ] --pull [] retirer des caractères de la recherche
-- [ ] -t pour faire le compte sur les mots d'un texte
-- [ ] comparaison avec 2nd champ fichier
 
 ## ensuite
 # Documentation :

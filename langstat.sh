@@ -10,13 +10,13 @@ function quickhelp {
        	echo -e "\t\tou ./langstat.sh -ovy dico.txt"
 	echo "Options valides: -o | -v | -y"
 	echo "Pour plus d'informations veuillez consulter la documentation complète"
-	exit 0
+	exit
 }
 
 # Fonction affichage et sortie en cas d'erreur
 function errorcase {
 	echo "Utilisez l'option -h ou --help pour vérifier la syntaxe"
-	exit 1
+	exit
 }
 
 # Récupération des options et gestion des erreurs de saisie
@@ -37,7 +37,7 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 				tflag='true'
 				;;
 			i)
-				iflag='-i'
+				igrep='-i'
 				;;
 			l)
 				lflag='true'
@@ -54,6 +54,14 @@ while [ "$(echo "$1" | cut -c 1)" = "-" ]; do
 			-)
 				longoption=`echo "$1" | cut -c 3-`
 				case $longoption in
+					plus-lower)
+						pluslower='àâäçèéêëîïôöùûüæœ'
+						break
+						;;
+					plus-upper)
+						plusupper='ÀÂÄÇÈÉÊËÎÏÔÖÙÛÜÆŒ'
+						break
+						;;
 					lower-only)
 						Lflag='true'
 						break
@@ -94,6 +102,8 @@ if [ ! -z $Lflag ]; then
 	alphabet=$lowercase
 fi
 
+alphabet=$alphabet$pluslower$plusupper
+
 # Traitement du fichier passé en argument
 if [ ! -e "$1" ] || [ ! -f "$1" ]; then
 	echo "nom de fichier invalide ou non spécifiée"
@@ -125,7 +135,7 @@ else
 fi
 
 for char in `echo "$alphabet" | sed 's/\(.\)/\1\n/g'`; do
-	echo "$(grep $iflag $char $intmp | wc -l)-$char" >> $outtmp
+	echo "$(grep $igrep $char $intmp | wc -l)-$char" >> $outtmp
 done
 
 sort -rn $outtmp | sed 's/\([0-9]*\)-\(.\)/\2 - \1/g'
